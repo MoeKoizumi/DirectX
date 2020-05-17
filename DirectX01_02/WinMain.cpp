@@ -404,24 +404,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		float clearColor[] = { 0.1f,0.25f,0.5f,0.0f };//青っぽい色
 		cmdList->ClearRenderTargetView(rtvH, clearColor, 0, nullptr);
 		
-		//命令のクローズ
-		cmdList->Close();
-		//コマンドリストの実行
-		ID3D12CommandList* cmdLists[] = { cmdList };//コマンドリストの配列
-		cmdQueue->ExecuteCommandLists(1, cmdLists);
-		//コマンドリストの実行完了を待つ
-		cmdQueue->Signal(fence, ++fenceVal);
-		if (fence->GetCompletedValue() != fenceVal)
-		{
-			HANDLE event = CreateEvent(nullptr, false, false, nullptr);
-			fence->SetEventOnCompletion(fenceVal, event);
-			WaitForSingleObject(event, INFINITE);
-			CloseHandle(event);
-		}
-		cmdAllocator->Reset();//キューをクリア
-		cmdList->Reset(cmdAllocator, nullptr);//再びコマンドリストをためる準備
-		//バッファをフリップ(裏表の差し替え)
-		swapchain->Present(1, 0);
 		//2.画面クリアコマンドここまで
 #pragma endregion
 
@@ -457,6 +439,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 		//描画コマンド
 		cmdList->DrawInstanced(3, 1, 0, 0);
+
 		//3.描画コマンドここまで
 #pragma endregion
 
