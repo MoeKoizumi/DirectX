@@ -164,6 +164,7 @@ dxgiFactory->CreateSwapChainForHwnd(
 D3D12_DESCRIPTOR_HEAP_DESC heapDesc{};
 heapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;//レンダーターゲットビュー
 heapDesc.NumDescriptors = 2;//裏表の二つ
+dev->CreateDescriptorHeap(&heapDesc, IID_PPV_ARGS(&rtvHeaps));
 //裏表の2つ分について
 std::vector<ID3D12Resource*>backBuffers(2);
 for (int i = 0; i < 2; i++) 
@@ -228,7 +229,7 @@ result = dev->CreateFence(fenceVal, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence))
 		//レンダーターゲットビュー用ディスクリプタヒープのハンドルを取得
 		D3D12_CPU_DESCRIPTOR_HANDLE rtvH =
 			rtvHeaps->GetCPUDescriptorHandleForHeapStart();
-		rtvH.ptr = bbindex * dev->GetDescriptorHandleIncrementSize(heapDesc.Type);
+		rtvH.ptr += bbindex * dev->GetDescriptorHandleIncrementSize(heapDesc.Type);
 		cmdList->OMSetRenderTargets(1, &rtvH, false, nullptr);
 		//全画面クリア　　　　　R　　G　　B　　A
 		float clearColor[] = { 0.1f,0.25f,0.5f,0.0f };//青っぽい色
