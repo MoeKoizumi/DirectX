@@ -6,7 +6,6 @@
 #pragma comment(lib,"d3d12.lib")
 #pragma comment(lib,"dxgi.lib")
 
-//初期化に必要な変数たち
 HRESULT result;
 ID3D12Device* dev = nullptr;
 IDXGIFactory6* dxgiFactory = nullptr;
@@ -67,9 +66,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	//ウィンドウ表示
 	ShowWindow(hwnd, SW_SHOW);
 
-//アダプタの列挙
-//
-
 //DXGIファクトリーの生成
 result = CreateDXGIFactory1(IID_PPV_ARGS(&dxgiFactory));
 //アダプターの列挙用
@@ -96,9 +92,6 @@ for (int i = 0; i < adapters.size(); i++)
 	}
 }
 
-//デバイス
-//デバイスはDirect3D12の基本オブジェクト　必須
-
 //対応レベルの配列
 D3D_FEATURE_LEVEL levels[] =
 {
@@ -121,6 +114,7 @@ for (int i = 0; i < _countof(levels); i++)
 		break;
 	}
 }
+<<<<<<< HEAD
 
 //コマンドリスト
 //GPUにまとめて命令を送るためのリスト
@@ -190,6 +184,8 @@ ID3D12Fence* fence = nullptr;
 UINT64 fenceVal = 0;
 result = dev->CreateFence(fenceVal, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence));
 
+=======
+>>>>>>> parent of 65d2981... 1-2縲蛻晄悄蛹悶邨ゆｺ�
 	//初期化処理ここまで
 
 	MSG msg{};//メッセ―ジ
@@ -207,6 +203,7 @@ result = dev->CreateFence(fenceVal, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence))
 		}
 
 		//DirectX　毎フレーム処理ここから
+<<<<<<< HEAD
 		
 		//リソースバリア
 		//バックバッファなど、リソースの状態を確実に切り替えるための仕組み
@@ -261,6 +258,8 @@ result = dev->CreateFence(fenceVal, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence))
 		barrierDesc.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;//描画
 		barrierDesc.Transition.StateAfter = D3D12_RESOURCE_STATE_PRESENT;//表示に
 		cmdList->ResourceBarrier(1, &barrierDesc);
+=======
+>>>>>>> parent of 65d2981... 1-2縲蛻晄悄蛹悶邨ゆｺ�
 
 
 
