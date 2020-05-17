@@ -372,10 +372,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			DispatchMessage(&msg);//プロs-じゃにメッセージを送る
 		}
 
-		//終了メッセージが来たらループを抜ける
-		if (msg.message == WM_QUIT) {
-			break;
-		}
+		
 #pragma endregion
 
 		//リソースバリア
@@ -430,8 +427,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 #pragma region 描画コマンド
 
-
-
 		//3.描画コマンドここから
 		cmdList->SetPipelineState(pipelinestate);
 		D3D12_VIEWPORT viewport{};
@@ -470,6 +465,29 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		barrierDesc.Transition.StateAfter = D3D12_RESOURCE_STATE_PRESENT;//表示に
 		cmdList->ResourceBarrier(1, &barrierDesc);
 
+		//命令のクローズ
+		cmdList->Close();
+		//コマンドリストの実行
+		ID3D12CommandList* cmdLists[] = { cmdList };//コマンドリストの配列
+		cmdQueue->ExecuteCommandLists(1, cmdLists);
+		//コマンドリストの実行完了を待つ
+		cmdQueue->Signal(fence, ++fenceVal);
+		if (fence->GetCompletedValue() != fenceVal)
+		{
+			HANDLE event = CreateEvent(nullptr, false, false, nullptr);
+			fence->SetEventOnCompletion(fenceVal, event);
+			WaitForSingleObject(event, INFINITE);
+			CloseHandle(event);
+		}
+		cmdAllocator->Reset();//キューをクリア
+		cmdList->Reset(cmdAllocator, nullptr);//再びコマンドリストをためる準備
+		//バッファをフリップ(裏表の差し替え)
+		swapchain->Present(1, 0);
+		
+		//終了メッセージが来たらループを抜ける
+		if (msg.message == WM_QUIT) {
+			break;
+		}
 	}
 
 	//ウィンドウクラスを登録解除

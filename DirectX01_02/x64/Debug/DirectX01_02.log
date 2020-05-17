@@ -1,3 +1,3 @@
-﻿  compilation object save succeeded; see C:\Users\momom\OneDrive\デスクトップ\3年授業\DirectX12\DirectXGit\DirectX01_02\x64\Debug\BasicVertexShader.cso
-  WinMain.cpp
-  DirectX01_02.vcxproj -> C:\Users\momom\OneDrive\デスクトップ\3年授業\DirectX12\DirectXGit\DirectX01_02\x64\Debug\DirectX01_02.exe
+﻿  WinMain.cpp
+c:\users\momom\onedrive\デスクトップ\3年授業\directx12\directxgit\directx01_02\winmain.cpp(471): error C2374: 'cmdLists': 再定義されています。2 回以上初期化されています。
+  c:\users\momom\onedrive\デスクトップ\3年授業\directx12\directxgit\directx01_02\winmain.cpp(410): note: 'cmdLists' の宣言を確認してください
