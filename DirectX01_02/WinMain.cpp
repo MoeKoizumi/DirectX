@@ -89,8 +89,6 @@ for (int i = 0; i < adapters.size(); i++)
 	{
 		tmpAdapter = adapters[i];//Ì—p
 		break;
-		//a
-
 	}
 }
 
