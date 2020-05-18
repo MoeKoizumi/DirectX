@@ -4,6 +4,8 @@
 #include <vector>
 #include <DirectXMath.h>
 #include <d3dcompiler.h>
+#define DIRECTINPUT_VERSION 0x0800 //DirectInputのバージョン指定
+#include <dinput.h>
 
 
 using namespace DirectX;
@@ -11,7 +13,8 @@ using namespace DirectX;
 #pragma comment(lib,"d3d12.lib")
 #pragma comment(lib,"dxgi.lib")
 #pragma comment(lib,"d3dcompiler.lib")
-
+#pragma comment(lib,"dinput8.lib")
+#pragma comment(lib,"dxguid.lib")
 
 LRESULT WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
@@ -203,6 +206,26 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	UINT64 fenceVal = 0;
 	result = dev->CreateFence(fenceVal, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence));
 
+	//キー操作受付に当たり必要
+	//DirectInputオブジェクトの生成
+	IDirectInput8* dinput = nullptr;
+	result = DirectInput8Create(
+		w.hInstance, DIRECTINPUT_VERSION, IID_IDirectInput8, (void**)&dinput, nullptr);
+
+	//キーボードデバイスの生成
+	IDirectInputDevice8* devkeyboard = nullptr;
+	result = dinput->CreateDevice(GUID_SysKeyboard, &devkeyboard, NULL);
+
+	//入力データ形式のセット
+	result = devkeyboard->SetDataFormat(&c_dfDIKeyboard);//標準形式
+
+	//排他制御レベルのセット
+	//DISCL_FOREGROUND  画面が手前にある場合のみ入力を受け付け 
+	//DISCL_NONEXCLUSIVE　デバイスをこのアプリだけで占有しない
+	//DISCL_NOWINKEY　windowsキーを無効
+	result = devkeyboard->SetCooperativeLevel(
+		hwnd, DISCL_FOREGROUND | DISCL_NONEXCLUSIVE | DISCL_NOWINKEY);
+
 	//*****************************************************************************************************************
 #pragma endregion
 
@@ -383,6 +406,17 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		//4.描画後にバッファを表示用の状態に戻すコマンド。
 		//の順でコマンドリストに追加する
 
+		//キーボード情報の取得開始
+		result = devkeyboard->Acquire();
+		//全キ―の入力状態を取得する
+		BYTE key[256] = {};
+		result = devkeyboard->GetDeviceState(sizeof(key), key);
+		//キーが押されているときの処理例
+		if (key[DIK_SPACE])
+		{
+			OutputDebugStringA("Hit 0\n");//出力ウィンドウに表示
+		}
+
 		//バックバッファの番号を取得(2つなので0番か1番)
 		UINT bbindex = swapchain->GetCurrentBackBufferIndex();
 		//1.リソースバリアを変更
@@ -433,6 +467,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 		//プリミティブ形状の設定コマンド(三角形リスト)
 		cmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+
 
 		//頂点バッファの設定コマンド
 		cmdList->IASetVertexBuffers(0, 1, &vbView);
