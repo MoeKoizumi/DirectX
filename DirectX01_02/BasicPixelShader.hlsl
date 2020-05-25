@@ -1,4 +1,8 @@
-float4 PSmain(float4 pos:SV_POSITION):SV_TARGET
+cbuffer cbuff0 : register(b0)
 {
-	return float4(1,0,0,1);
+	float4 color; // êF(RGBA)
+};
+float4 PSmain(float4 pos : SV_POSITION) : SV_TARGET
+{
+return color;
 }
